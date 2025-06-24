@@ -660,34 +660,48 @@
          <!-- Cart Modal -->
         <div class="modal fade" id="cartModal" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Your Cart</h5>
-                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                    </div>
-                    <div class="modal-body">
-                        <ul id="cartItems" class="list-group mb-3"></ul>
-                        <p class="font-weight-bold">Total: <span id="totalAmount">Ksh 0.00</span></p>
-                        <div class="form-group">
-                            <label>Order Type:</label><br>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input order-type" type="radio" name="orderType" value="Take Away"
-                                    checked>
-                                <label class="form-check-label">Take Away</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input order-type" type="radio" name="orderType" value="Eat In">
-                                <label class="form-check-label">Eat In</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#" id="whatsappOrder" target="_blank" class="btn btn-success">Send via WhatsApp</a>
-                    </div>
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Your Cart</h5>
+                  <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                 </div>
+                <div class="modal-body">
+                  <ul id="cartItems" class="list-group mb-3"></ul>
+          
+                  <!-- Extras -->
+                  <div class="form-group">
+                    <label><strong>Choose Extras:</strong></label><br>
+                    <div class="form-check"><input class="form-check-input extra-option" type="checkbox" value="Egg" data-price="50"> Egg (+Ksh 50)</div>
+                    <div class="form-check"><input class="form-check-input extra-option" type="checkbox" value="Cheese" data-price="100"> Cheese (+Ksh 100)</div>
+                    <div class="form-check"><input class="form-check-input extra-option" type="checkbox" value="French Toast Bun" data-price="150"> French Toast Bun (+Ksh 150)</div>
+                    <div class="form-check"><input class="form-check-input extra-option" type="checkbox" value="Bacon" data-price="150"> Bacon (+Ksh 150)</div>
+                    <div class="form-check"><input class="form-check-input extra-option" type="checkbox" value="Avocado" data-price="50"> Avocado (+Ksh 50)</div>
+                    <div class="form-check"><input class="form-check-input extra-option" type="checkbox" value="Coleslaw" data-price="100"> Coleslaw (+Ksh 100)</div>
+                    <div class="form-check"><input class="form-check-input extra-option" type="checkbox" value="Burger Sauce (Dip)" data-price="0"> Burger Sauce (Dip)</div>
+                    <div class="form-check"><input class="form-check-input extra-option" type="checkbox" value="Extra Tartar Sauce" data-price="100"> Extra Tartar Sauce (+Ksh 100)</div>
+                  </div>
+          
+                  <p class="font-weight-bold">Total: <span id="totalAmount">Ksh 0.00</span></p>
+          
+                  <!-- Order Type -->
+                  <div class="form-group">
+                    <label>Order Type:</label><br>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input order-type" type="radio" name="orderType" value="Take Away" checked>
+                      <label class="form-check-label">Take Away</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input order-type" type="radio" name="orderType" value="Eat In">
+                      <label class="form-check-label">Eat In</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <a href="#" id="whatsappOrder" target="_blank" class="btn btn-success">Send via WhatsApp</a>
+                </div>
+              </div>
             </div>
-        </div>
-        
+          </div>
         <!-- Toast Notification -->
         <div id="toast"
             style="position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white; padding: 10px 20px; border-radius: 5px; display: none;">
@@ -704,72 +718,91 @@
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
         <script>
-            let cart = [];
-        
-            function updateCartModal() {
-                const cartItems = document.getElementById('cartItems');
-                const totalAmount = document.getElementById('totalAmount');
-                cartItems.innerHTML = '';
-                let total = 0;
-        
-                cart.forEach((item, index) => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
-        
-                    const itemText = document.createElement('span');
-                    itemText.textContent = `${item.name} - Ksh ${parseFloat(item.price).toFixed(2)}`;
-        
-                    const removeBtn = document.createElement('button');
-                    removeBtn.className = 'btn btn-sm btn-danger';
-                    removeBtn.textContent = 'Remove';
-                    removeBtn.onclick = () => removeItemFromCart(index);
-        
-                    li.appendChild(itemText);
-                    li.appendChild(removeBtn);
-                    cartItems.appendChild(li);
-        
-                    total += parseFloat(item.price);
-                });
-        
-                totalAmount.textContent = `Ksh ${total.toFixed(2)}`;
-                generateWhatsAppLink(total);
-            }
-        
-            function removeItemFromCart(index) {
-                cart.splice(index, 1); // Remove item from cart
-                updateCartModal();     // Update the cart display
-            }
-        
-            function showToast() {
-                const toast = document.getElementById('toast');
-                toast.style.display = 'block';
-                setTimeout(() => toast.style.display = 'none', 1500);
-            }
-        
-            function generateWhatsAppLink(total) {
-                const type = document.querySelector('input[name="orderType"]:checked').value;
-                const message = `Hello! I'd like to order:\n` +
-                    cart.map(item => `- ${item.name} (Ksh ${parseFloat(item.price).toFixed(2)})`).join('\n') +
-                    `\n\nOrder Type: ${type}\nTotal: Ksh ${total.toFixed(2)}`;
-                const encoded = encodeURIComponent(message);
-                document.getElementById('whatsappOrder').href = `https://wa.me/256703666669?text=${encoded}`;
-            }
-        
-            document.addEventListener('DOMContentLoaded', () => {
-                document.querySelectorAll('.add-to-cart').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const name = btn.getAttribute('data-name');
-                        const price = btn.getAttribute('data-price');
-                        cart.push({ name, price });
-                        showToast();
-                        updateCartModal();
-                    });
-                });
-        
-                document.querySelectorAll('input[name="orderType"]').forEach(radio => {
-                    radio.addEventListener('change', () => updateCartModal());
-                });
-            });
+           let cart = [];
+
+  function updateCartModal() {
+    const cartItems = document.getElementById('cartItems');
+    const totalAmount = document.getElementById('totalAmount');
+    cartItems.innerHTML = '';
+    let total = 0;
+
+    cart.forEach((item, index) => {
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+      const itemText = document.createElement('span');
+      itemText.textContent = `${item.name} - Ksh ${parseFloat(item.price).toFixed(2)}`;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'btn btn-sm btn-danger';
+      removeBtn.textContent = 'Remove';
+      removeBtn.onclick = () => removeItemFromCart(index);
+
+      li.appendChild(itemText);
+      li.appendChild(removeBtn);
+      cartItems.appendChild(li);
+
+      total += parseFloat(item.price);
+    });
+
+    // Add extras
+    document.querySelectorAll('.extra-option').forEach(extra => {
+      if (extra.checked) {
+        total += parseFloat(extra.getAttribute('data-price'));
+      }
+    });
+
+    totalAmount.textContent = `Ksh ${total.toFixed(2)}`;
+    generateWhatsAppLink(total);
+  }
+
+  function generateWhatsAppLink(total) {
+    const type = document.querySelector('input[name="orderType"]:checked').value;
+
+    const extras = Array.from(document.querySelectorAll('.extra-option'))
+      .filter(e => e.checked)
+      .map(e => `+ ${e.value} (Ksh ${e.getAttribute('data-price')})`)
+      .join('\n');
+
+    const message = `Hello! I'd like to order:\n` +
+      cart.map(item => `- ${item.name} (Ksh ${parseFloat(item.price).toFixed(2)})`).join('\n') +
+      (extras ? `\n\nExtras:\n${extras}` : '') +
+      `\n\nOrder Type: ${type}\nTotal: Ksh ${total.toFixed(2)}`;
+
+    const encoded = encodeURIComponent(message);
+    document.getElementById('whatsappOrder').href = `https://wa.me/256703666669?text=${encoded}`;
+  }
+
+  function removeItemFromCart(index) {
+    cart.splice(index, 1);
+    updateCartModal();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.getAttribute('data-name');
+        const price = btn.getAttribute('data-price');
+        cart.push({ name, price });
+        showToast();
+        updateCartModal();
+      });
+    });
+
+    document.querySelectorAll('input[name="orderType"]').forEach(radio => {
+      radio.addEventListener('change', () => updateCartModal());
+    });
+
+    document.querySelectorAll('.extra-option').forEach(opt => {
+      opt.addEventListener('change', () => updateCartModal());
+    });
+  });
+
+  function showToast() {
+    const toast = document.getElementById('toast');
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 1500);
+  }
         </script>
         
 
